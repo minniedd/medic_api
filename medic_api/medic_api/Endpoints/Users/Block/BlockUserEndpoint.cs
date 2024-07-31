@@ -18,7 +18,7 @@ namespace medic_api.Endpoints.Users.Block
         }
 
         [HttpPost("{id}")]
-        public override async Task<BlockUserResponse> Obradi(int id, CancellationToken cancellationToken)
+        public override async Task<BlockUserResponse> Obradi(int id)
         {
             var user = await _dbContext.User.FindAsync(id);
 
@@ -33,7 +33,7 @@ namespace medic_api.Endpoints.Users.Block
             user.isBlocked = true;
             user.status = "Blocked";
 
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            await _dbContext.SaveChangesAsync();
 
             return new BlockUserResponse
             {

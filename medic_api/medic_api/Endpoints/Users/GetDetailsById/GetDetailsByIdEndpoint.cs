@@ -18,7 +18,7 @@ namespace medic_api.Endpoints.Users.GetDetailsById
         }
 
         [HttpGet("{id}")]
-        public override async Task<GetDetailsByIdResponse> Obradi(int id, CancellationToken cancellationToken)
+        public override async Task<GetDetailsByIdResponse> Obradi(int id)
         {
 
             var detail = await _dbContext.User.Select(x => new GetDetailsByIdResponse
@@ -32,7 +32,7 @@ namespace medic_api.Endpoints.Users.GetDetailsById
                 status = x.status,
                 birthDate = x.birthDate.ToString()
 
-            }).SingleAsync(x=>x.id == id,cancellationToken: cancellationToken);
+            }).SingleAsync(x=>x.id == id);
 
             return detail;
         }
