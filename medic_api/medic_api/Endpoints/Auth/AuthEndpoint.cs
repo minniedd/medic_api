@@ -13,7 +13,7 @@ using System.Text;
 
 namespace medic_api.Endpoints.Auth
 {
-    [Route("api/[controller]")]
+    [Route("user/[controller]")]
     [ApiController]
     public class AuthEndpoint : ControllerBase
     {
@@ -25,6 +25,45 @@ namespace medic_api.Endpoints.Auth
             _dbContext = dbContext;
             _configuration = configuration;
         }
+
+        [HttpPost("AddUser")]
+        public async Task<IActionResult> AddUser([FromBody] AddUserRequest request)
+        {
+            if(_dbContext.User.Any(x=>x.username == request.username))
+            {
+                return BadRequest(new AddUserResponse
+                {
+                    message = "username is already taken"
+                });
+            }
+
+            CreatePasswordHash(request.password, out byte[] passwordHash, out byte[] passwordSalt);
+
+            var user = new User
+            {
+                username = request.username,
+                passwordHash = passwordHash,
+                passwordSalt = passwordSalt,
+                name = request.name,
+                orders = request.orders,
+                imageUrl = request.imageUrl,
+                birthDate = request.birthDate,
+                isAdmin = false,
+                isBlocked = false,
+                status = "Active",
+                lastLoginDate = null
+            };
+
+            _dbContext.Add(user);
+            _dbContext.SaveChangesAsync();
+
+            
+            return Ok(new AddUserResponse
+            {
+                message = "user was added successfully",
+            });
+        }
+
 
 
         [HttpPost("login")]
