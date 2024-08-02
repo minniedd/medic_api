@@ -20,21 +20,56 @@ namespace medic_api.Endpoints.Users.GetDetailsById
         [HttpGet("{id}")]
         public override async Task<GetDetailsByIdResponse> Obradi(int id)
         {
+            var user = _dbContext.User.FirstOrDefault(x=>x.id == id);
 
-            var detail = await _dbContext.User.Select(x => new GetDetailsByIdResponse
+            if(user == null)
             {
-                id = x.id,
-                name = x.name,
-                username = x.username,
-                orders = x.orders.Value,
-                lastLoginDate = x.lastLoginDate.ToString(),
-                imageUrl = x.imageUrl,
-                status = x.status,
-                birthDate = x.birthDate.ToString()
+                throw new Exception("User not found");
+            }
 
-            }).SingleAsync(x=>x.id == id);
+            var detail = new GetDetailsByIdResponse
+            {
+                id = user.id,
+                name = user.name,
+                username = user.username,
+                orders = user.orders.Value,
+                lastLoginDate = user.lastLoginDate.ToString(),
+                imageUrl = user.imageUrl,
+                status = user.status,
+                birthDate = user.birthDate.ToString()
+
+            };
 
             return detail;
+        }
+
+        [HttpPatch("Update")]
+        public ActionResult UpdateUserDetails(int id,[FromBody]UpdateUserDetailsRequest request)
+        {
+            var user = _dbContext.User.FirstOrDefault(x => x.id == id);
+            if(user == null)
+            {
+                return BadRequest("user not found");
+            }
+
+            user.name = request.name;
+            user.username = request.username;
+            user.orders = request.orders;
+            user.imageUrl = request.imageUrl;
+            user.birthDate = request.birthDate;
+
+            _dbContext.SaveChanges();
+
+            var updatedDetailResponse = new UpdateUserDetailResponse
+            {
+                name = user.name,
+                username = user.username,
+                orders = user.orders.Value,
+                imageUrl = user.imageUrl,
+                birthDate = user.birthDate
+            };
+
+            return Ok(updatedDetailResponse);
         }
     }
 }
