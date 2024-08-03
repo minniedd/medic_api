@@ -20,7 +20,7 @@ namespace medic_api.Endpoints.Users.GetAll
         [HttpGet]
         public override async Task<UserGetAllResponse> Obradi([FromQuery]UserGetAllRequest request)
         {
-            var users = await _dbContext.User.Where(x => x.status != "Blocked" && x.isAdmin == false).Select(x => new UserGetAllResponseUser
+            var users = await _dbContext.User.Where(x => x.isAdmin == false).Select(x => new UserGetAllResponseUser
             {
                 id = x.id,
                 name = x.name,

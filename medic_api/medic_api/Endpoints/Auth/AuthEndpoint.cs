@@ -55,7 +55,7 @@ namespace medic_api.Endpoints.Auth
             };
 
             _dbContext.Add(user);
-            _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
 
             
             return Ok(new AddUserResponse
@@ -84,6 +84,11 @@ namespace medic_api.Endpoints.Auth
             if (!user.isAdmin)
             {
                 return Unauthorized("denied access");
+            }
+
+            if (user.isBlocked)
+            {
+                return Unauthorized("Your account has been blocked.");
             }
 
             user.lastLoginDate = DateTime.Now;
